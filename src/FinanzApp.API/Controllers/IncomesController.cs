@@ -30,7 +30,7 @@ public class IncomesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Guid userId, IncomeCreateDto dto)
+    public async Task<IActionResult> Create(Guid userId, [FromBody]IncomeCreateDto dto)
     {
         var created = await _service.CreateAsync(userId, dto);
         return CreatedAtAction(nameof(GetById),
@@ -38,7 +38,7 @@ public class IncomesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid userId, Guid id, IncomeCreateDto dto)
+    public async Task<IActionResult> Update(Guid userId, Guid id, [FromBody]IncomeCreateDto dto)
     {
         try
         {
