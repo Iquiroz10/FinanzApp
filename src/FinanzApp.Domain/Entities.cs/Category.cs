@@ -6,8 +6,8 @@ public class Category : BaseEntity
   public string Name { get; set; } = string.Empty;
   public CategoryType Type { get; set; }
 
-  // Navegación
-  public ICollection<Income> Incomes { get; set; } = [];
+ // Navegación
   public ICollection<Expense> Expenses { get; set; } = [];
+  public ICollection<Debt> Debts { get; set; } = [];
   
 }

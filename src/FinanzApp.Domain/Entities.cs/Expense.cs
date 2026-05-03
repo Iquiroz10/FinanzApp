@@ -1,6 +1,8 @@
 
+using FinanzApp.Domain.Common;
+
 namespace FinanzApp.Domain.Entities;
-public class Expense
+public class Expense : BaseEntity
 {
   public Guid UserId { get; set; }
     public Guid CategoryId { get; set; }
