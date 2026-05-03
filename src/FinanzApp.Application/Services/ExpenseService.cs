@@ -1,44 +1,42 @@
-using AutoMapper;
 using FinanzApp.Application.DTOs.Expense;
 using FinanzApp.Application.Interfaces.Repositories;
 using FinanzApp.Application.Interfaces.Services;
 using FinanzApp.Domain.Entities;
+using Mapster;
 
 namespace FinanzApp.Application.Services;
 
 public class ExpenseService : IExpenseService
 {
-    private readonly IExpenseRepository _repository;
-    private readonly IMapper _mapper;
+    private readonly IExpenseRepository _repository;   
 
-    public ExpenseService(IExpenseRepository repository, IMapper mapper)
+    public ExpenseService(IExpenseRepository repository)
     {
-        _repository = repository;
-        _mapper = mapper;
+        _repository = repository;        
     }
 
     public async Task<IEnumerable<ExpenseResponseDto>> GetAllByUserAsync(Guid userId)
     {
         var expenses = await _repository.GetAllByUserAsync(userId);
-        return _mapper.Map<IEnumerable<ExpenseResponseDto>>(expenses);
+        return expenses.Adapt<IEnumerable<ExpenseResponseDto>>();
     }
 
     public async Task<ExpenseResponseDto?> GetByIdAsync(Guid id)
     {
         var expense = await _repository.GetByIdAsync(id);
-        return expense is null ? null : _mapper.Map<ExpenseResponseDto>(expense);
+        return expense?.Adapt<ExpenseResponseDto>();
     }
 
     public async Task<ExpenseResponseDto> CreateAsync(Guid userId, ExpenseCreateDto dto)
     {
-        var expense = _mapper.Map<Expense>(dto);
+        var expense = dto.Adapt<Expense>();
         expense.UserId = userId;
 
         var created = await _repository.AddAsync(expense);
 
         // Recargamos con Include para tener CategoryName en el response
         var full = await _repository.GetByIdAsync(created.Id);
-        return _mapper.Map<ExpenseResponseDto>(full!);
+        return full!.Adapt<ExpenseResponseDto>();
     }
 
     public async Task UpdateAsync(Guid id, ExpenseCreateDto dto)
@@ -46,7 +44,7 @@ public class ExpenseService : IExpenseService
         var expense = await _repository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException($"Expense {id} not found");
 
-        _mapper.Map(dto, expense);
+        dto.Adapt(expense);
         await _repository.UpdateAsync(expense);
     }
 

@@ -1,46 +1,42 @@
-using AutoMapper;
 using FinanzApp.Application.DTOs.Category;
 using FinanzApp.Application.DTOs.Debt;
 using FinanzApp.Application.DTOs.Expense;
 using FinanzApp.Application.DTOs.Income;
 using FinanzApp.Application.DTOs.Investment;
 using FinanzApp.Domain.Entities;
+using Mapster;
 
 namespace FinanzApp.Application.Mappings;
 
-public class AutoMapperProfile : Profile
+public class MappingConfig : IRegister
 {
-    public AutoMapperProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Income
-        CreateMap<IncomeCreateDto, Income>();
-        CreateMap<Income, IncomeResponseDto>();
+        config.NewConfig<IncomeCreateDto, Income>();
+        config.NewConfig<Income, IncomeResponseDto>();
 
         // Expense
-        CreateMap<ExpenseCreateDto, Expense>();
-        CreateMap<Expense, ExpenseResponseDto>()
-            .ForMember(dest => dest.CategoryName,
-                opt => opt.MapFrom(src => src.Category.Name));
+        config.NewConfig<ExpenseCreateDto, Expense>();
+        config.NewConfig<Expense, ExpenseResponseDto>()
+            .Map(dest => dest.CategoryName, src => src.Category.Name);
 
         // Debt
-        CreateMap<DebtCreateDto, Debt>();
-        CreateMap<Debt, DebtResponseDto>()
-            .ForMember(dest => dest.CategoryName,
-                opt => opt.MapFrom(src => src.Category.Name))
-            .ForMember(dest => dest.RemainingPayments,
-                opt => opt.MapFrom(src =>
-                    src.MonthlyPayment > 0
-                        ? (int)Math.Ceiling(src.RemainingBalance / src.MonthlyPayment)
-                        : (int?)null));
+        config.NewConfig<DebtCreateDto, Debt>();
+        config.NewConfig<Debt, DebtResponseDto>()
+            .Map(dest => dest.CategoryName, src => src.Category.Name)
+            .Map(dest => dest.RemainingPayments, src =>
+                src.MonthlyPayment > 0
+                    ? (int?)Math.Ceiling(src.RemainingBalance / src.MonthlyPayment)
+                    : null);
 
         // Investment
-        CreateMap<InvestmentCreateDto, Investment>();
-        CreateMap<Investment, InvestmentResponseDto>()
-            .ForMember(dest => dest.ProfitLoss,
-                opt => opt.MapFrom(src => src.CurrentValue - src.InvestedAmount));
+        config.NewConfig<InvestmentCreateDto, Investment>();
+        config.NewConfig<Investment, InvestmentResponseDto>()
+            .Map(dest => dest.ProfitLoss, src => src.CurrentValue - src.InvestedAmount);
 
         // Category
-        CreateMap<CategoryCreateDto, Category>();
-        CreateMap<Category, CategoryResponseDto>();
+        config.NewConfig<CategoryCreateDto, Category>();
+        config.NewConfig<Category, CategoryResponseDto>();
     }
 }

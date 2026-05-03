@@ -1,38 +1,35 @@
-using AutoMapper;
 using FinanzApp.Application.DTOs.Category;
 using FinanzApp.Application.Interfaces.Repositories;
 using FinanzApp.Application.Interfaces.Services;
 using FinanzApp.Domain.Entities;
+using Mapster;
 
 namespace FinanzApp.Application.Services;
 
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _repository;
-    private readonly IMapper _mapper;
-
-    public CategoryService(ICategoryRepository repository, IMapper mapper)
+    public CategoryService(ICategoryRepository repository)
     {
-        _repository = repository;
-        _mapper = mapper;
+        _repository = repository;        
     }
 
     public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync()
     {
         var categories = await _repository.GetAllAsync();
-        return _mapper.Map<IEnumerable<CategoryResponseDto>>(categories);
+        return categories.Adapt<IEnumerable<CategoryResponseDto>>();
     }
 
     public async Task<CategoryResponseDto?> GetByIdAsync(Guid id)
     {
         var category = await _repository.GetByIdAsync(id);
-        return category is null ? null : _mapper.Map<CategoryResponseDto>(category);
+        return category?.Adapt<CategoryResponseDto>();
     }
 
     public async Task<CategoryResponseDto> CreateAsync(CategoryCreateDto dto)
     {
-        var category = _mapper.Map<Category>(dto);
+        var category = dto.Adapt<Category>();
         var created = await _repository.AddAsync(category);
-        return _mapper.Map<CategoryResponseDto>(created);
+        return created.Adapt<CategoryResponseDto>();
     }
 }

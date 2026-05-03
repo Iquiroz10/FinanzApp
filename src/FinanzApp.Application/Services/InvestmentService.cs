@@ -1,41 +1,41 @@
-using AutoMapper;
+
 using FinanzApp.Application.DTOs.Investment;
 using FinanzApp.Application.Interfaces.Repositories;
 using FinanzApp.Application.Interfaces.Services;
 using FinanzApp.Domain.Entities;
+using Mapster;
 
 namespace FinanzApp.Application.Services;
 
 public class InvestmentService : IInvestmentService
 {
     private readonly IInvestmentRepository _repository;
-    private readonly IMapper _mapper;
+    
 
-    public InvestmentService(IInvestmentRepository repository, IMapper mapper)
+    public InvestmentService(IInvestmentRepository repository)
     {
-        _repository = repository;
-        _mapper = mapper;
+        _repository = repository;        
     }
 
     public async Task<IEnumerable<InvestmentResponseDto>> GetAllByUserAsync(Guid userId)
     {
         var investments = await _repository.GetAllByUserAsync(userId);
-        return _mapper.Map<IEnumerable<InvestmentResponseDto>>(investments);
+        return investments.Adapt<IEnumerable<InvestmentResponseDto>>();
     }
 
     public async Task<InvestmentResponseDto?> GetByIdAsync(Guid id)
     {
         var investment = await _repository.GetByIdAsync(id);
-        return investment is null ? null : _mapper.Map<InvestmentResponseDto>(investment);
+        return investment?.Adapt<InvestmentResponseDto>();
     }
 
     public async Task<InvestmentResponseDto> CreateAsync(Guid userId, InvestmentCreateDto dto)
     {
-        var investment = _mapper.Map<Investment>(dto);
+        var investment = dto.Adapt<Investment>();
         investment.UserId = userId;
 
-        var created = await _repository.AddAsync(investment);
-        return _mapper.Map<InvestmentResponseDto>(created);
+        var created = await _repository.AddAsync(investment);      
+        return created.Adapt<InvestmentResponseDto>();
     }
 
     public async Task UpdateAsync(Guid id, InvestmentCreateDto dto)
@@ -43,7 +43,7 @@ public class InvestmentService : IInvestmentService
         var investment = await _repository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException($"Investment {id} not found");
 
-        _mapper.Map(dto, investment);
+        dto.Adapt(investment);
         await _repository.UpdateAsync(investment);
     }
 

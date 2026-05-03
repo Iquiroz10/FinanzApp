@@ -1,9 +1,15 @@
+using FinanzApp.Application.Mappings;
 using FinanzApp.Infrastructure.Data;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+// Mapster — escanea y registra todos los IRegister del Assembly
+var mappingConfig = TypeAdapterConfig.GlobalSettings;
+mappingConfig.Scan(typeof(MappingConfig).Assembly);
+builder.Services.AddSingleton(mappingConfig);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
