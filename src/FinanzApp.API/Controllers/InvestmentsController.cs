@@ -1,11 +1,12 @@
 using FinanzApp.Application.DTOs.Investment;
 using FinanzApp.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanzApp.API.Controllers;
-
+[Authorize]
 [ApiController]
-[Route("api/users/{userId:guid}/[controller]")]
+[Route("api/[controller]")]
 public class InvestmentsController : ControllerBase
 {
     private readonly IInvestmentService _service;
@@ -15,26 +16,30 @@ public class InvestmentsController : ControllerBase
         _service = service;
     }
 
+    private Guid GetUserId() =>
+    Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+        ?? throw new UnauthorizedAccessException());
+
     [HttpGet]
-    public async Task<IActionResult> GetAll(Guid userId)
+    public async Task<IActionResult> GetAll()
     {
-        var investments = await _service.GetAllByUserAsync(userId);
+        var investments = await _service.GetAllByUserAsync(GetUserId());
         return Ok(investments);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid userId, Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var investment = await _service.GetByIdAsync(id);
         return investment is null ? NotFound() : Ok(investment);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Guid userId, [FromBody]InvestmentCreateDto dto)
+    public async Task<IActionResult> Create([FromBody]InvestmentCreateDto dto)
     {
-        var created = await _service.CreateAsync(userId, dto);
+        var created = await _service.CreateAsync(GetUserId(), dto);
         return CreatedAtAction(nameof(GetById),
-            new { userId, id = created.Id }, created);
+            new { userId = GetUserId(), id = created.Id }, created);
     }
 
     [HttpPut("{id:guid}")]
@@ -52,7 +57,7 @@ public class InvestmentsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid userId, Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
@@ -64,4 +69,6 @@ public class InvestmentsController : ControllerBase
             return NotFound();
         }
     }
+
+    
 }

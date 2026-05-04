@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanzApp.API.Controllers;
 
 [ApiController]
-[Route("api/users/{userId:guid}/[controller]")]
+[Route("api/[controller]")]
 public class IncomesController : ControllerBase
 {
     private readonly IIncomeService _service;
@@ -15,30 +15,34 @@ public class IncomesController : ControllerBase
         _service = service;
     }
 
+    private Guid GetUserId() =>
+    Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+        ?? throw new UnauthorizedAccessException());
+
     [HttpGet]
-    public async Task<IActionResult> GetAll(Guid userId)
+    public async Task<IActionResult> GetAll()
     {
-        var incomes = await _service.GetAllByUserAsync(userId);
+        var incomes = await _service.GetAllByUserAsync(GetUserId());
         return Ok(incomes);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid userId, Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var income = await _service.GetByIdAsync(id);
         return income is null ? NotFound() : Ok(income);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Guid userId, [FromBody]IncomeCreateDto dto)
+    public async Task<IActionResult> Create([FromBody]IncomeCreateDto dto)
     {
-        var created = await _service.CreateAsync(userId, dto);
+        var created = await _service.CreateAsync(GetUserId(), dto);
         return CreatedAtAction(nameof(GetById),
-            new { userId, id = created.Id }, created);
+            new { userId = GetUserId(), id = created.Id }, created);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid userId, Guid id, [FromBody]IncomeCreateDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody]IncomeCreateDto dto)
     {
         try
         {
@@ -52,7 +56,7 @@ public class IncomesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid userId, Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
@@ -64,4 +68,6 @@ public class IncomesController : ControllerBase
             return NotFound();
         }
     }
+
+    
 }
