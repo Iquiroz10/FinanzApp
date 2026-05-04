@@ -29,8 +29,7 @@ public class TokenService : ITokenService
             double.Parse(_configuration["Jwt:ExpirationHours"]!));
 
         var claims = new[]
-        {
-          new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        {          
           new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
           new Claim(JwtRegisteredClaimNames.Email, user.Email),
           new Claim(JwtRegisteredClaimNames.Name, user.Name),
