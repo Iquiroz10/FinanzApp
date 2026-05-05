@@ -1,3 +1,4 @@
+using FinanzApp.API.Filters;
 using FinanzApp.Application.DTOs.Income;
 using FinanzApp.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,7 @@ public class IncomesController : ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilter<IncomeCreateDto>))]
     public async Task<IActionResult> Create([FromBody]IncomeCreateDto dto)
     {
         var created = await _service.CreateAsync(GetUserId(), dto);
@@ -42,6 +44,7 @@ public class IncomesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilter<IncomeCreateDto>))]
     public async Task<IActionResult> Update(Guid id, [FromBody]IncomeCreateDto dto)
     {
         try

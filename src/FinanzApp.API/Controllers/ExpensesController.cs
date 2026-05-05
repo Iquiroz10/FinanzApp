@@ -1,3 +1,4 @@
+using FinanzApp.API.Filters;
 using FinanzApp.Application.DTOs.Expense;
 using FinanzApp.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -35,6 +36,7 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilter<ExpenseCreateDto>))]
     public async Task<IActionResult> Create([FromBody]ExpenseCreateDto dto)
     {
         var created = await _service.CreateAsync(GetUserId(), dto);
@@ -43,6 +45,7 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilter<ExpenseCreateDto>))]
     public async Task<IActionResult> Update(Guid id, [FromBody]ExpenseCreateDto dto)
     {
         try

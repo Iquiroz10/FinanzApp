@@ -1,3 +1,4 @@
+using FinanzApp.API.Filters;
 using FinanzApp.Application.DTOs.Auth;
 using FinanzApp.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +17,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [ServiceFilter(typeof(ValidationFilter<RegisterDto>))]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         try
@@ -30,6 +32,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [ServiceFilter(typeof(ValidationFilter<RegisterDto>))]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         try

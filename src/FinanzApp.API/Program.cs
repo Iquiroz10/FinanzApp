@@ -1,11 +1,15 @@
 using System.Text;
+using FinanzApp.API.Filters;
 using FinanzApp.Application.Interfaces.Repositories;
 using FinanzApp.Application.Interfaces.Services;
 using FinanzApp.Application.Mappings;
 using FinanzApp.Application.Services;
+using FinanzApp.Application.Validators;
 using FinanzApp.Infrastructure.Data;
 using FinanzApp.Infrastructure.Repositories;
 using FinanzApp.Infrastructure.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +25,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters
             .Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+
+builder.Services.AddValidatorsFromAssemblyContaining<IncomeCreateValidator>();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -53,10 +59,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-
-
-
-
 
 
 // DbContext
@@ -108,6 +110,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+// Filtros de validación
+builder.Services.AddScoped(typeof(ValidationFilter<>));
 
 var app = builder.Build();
 
