@@ -48,29 +48,15 @@ public class DebtsController : ControllerBase
     [ServiceFilter(typeof(ValidationFilter<DebtCreateDto>))]
     public async Task<IActionResult> Update(Guid id, [FromBody]DebtCreateDto dto)
     {
-        try
-        {
-            await _service.UpdateAsync(id, dto);
-            return NoContent();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+      await _service.UpdateAsync(id, dto);
+      return NoContent();      
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await _service.DeleteAsync(id);
-            return NoContent();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+      await _service.DeleteAsync(id);
+      return NoContent();      
     }
 
     

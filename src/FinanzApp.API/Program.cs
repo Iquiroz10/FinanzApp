@@ -1,5 +1,6 @@
 using System.Text;
 using FinanzApp.API.Filters;
+using FinanzApp.API.Middleware;
 using FinanzApp.Application.Interfaces.Repositories;
 using FinanzApp.Application.Interfaces.Services;
 using FinanzApp.Application.Mappings;
@@ -120,7 +121,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
