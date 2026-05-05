@@ -25,7 +25,9 @@ public class InvestmentService : IInvestmentService
 
     public async Task<InvestmentResponseDto?> GetByIdAsync(Guid id)
     {
-        var investment = await _repository.GetByIdAsync(id);
+        var investment = await _repository.GetByIdAsync(id)
+            ?? throw new KeyNotFoundException($"Investment {id} not found");
+
         return investment?.Adapt<InvestmentResponseDto>();
     }
 

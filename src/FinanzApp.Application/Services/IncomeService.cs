@@ -22,7 +22,9 @@ public class IncomeService : IIncomeService
 
     public async Task<IncomeResponseDto?> GetByIdAsync(Guid id)
     {
-        var income = await _repository.GetByIdAsync(id);
+        var income = await _repository.GetByIdAsync(id)
+            ?? throw new KeyNotFoundException($"Income {id} not found");
+
         return income?.Adapt<IncomeResponseDto>();
     }
 

@@ -23,7 +23,9 @@ public class ExpenseService : IExpenseService
 
     public async Task<ExpenseResponseDto?> GetByIdAsync(Guid id)
     {
-        var expense = await _repository.GetByIdAsync(id);
+        var expense = await _repository.GetByIdAsync(id)
+            ?? throw new KeyNotFoundException($"Expense {id} not found");
+            
         return expense?.Adapt<ExpenseResponseDto>();
     }
 

@@ -23,7 +23,9 @@ public class DebtService : IDebtService
 
     public async Task<DebtResponseDto?> GetByIdAsync(Guid id)
     {
-        var debt = await _repository.GetByIdAsync(id);
+        var debt = await _repository.GetByIdAsync(id)
+            ?? throw new KeyNotFoundException($"Debt {id} not found");
+
         return debt?.Adapt<DebtResponseDto>();
     }
 

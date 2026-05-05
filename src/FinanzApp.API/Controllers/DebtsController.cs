@@ -32,7 +32,7 @@ public class DebtsController : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var debt = await _service.GetByIdAsync(id);
-        return debt is null ? NotFound() : Ok(debt);
+        return Ok(debt);
     }
 
     [HttpPost]

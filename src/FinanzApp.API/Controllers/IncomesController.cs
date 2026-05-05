@@ -31,7 +31,7 @@ public class IncomesController : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var income = await _service.GetByIdAsync(id);
-        return income is null ? NotFound() : Ok(income);
+        return Ok(income);
     }
 
     [HttpPost]
